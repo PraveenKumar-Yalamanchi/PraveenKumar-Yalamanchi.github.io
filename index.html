@@ -222,13 +222,64 @@ h2{font:800 clamp(30px,4.4vw,46px)/1.05 var(--f-display);font-stretch:112%;lette
 footer{border-top:1px solid var(--line);padding-block:26px calc(26px + env(safe-area-inset-bottom,0px));color:var(--muted);font:400 14px/1.5 var(--f-body)}
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
 
+/* ---------- Build log ---------- */
+.log-progress{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:28px;font:500 14px/1.2 var(--f-mono);color:var(--muted)}
+.log-progress b{color:var(--neon);font-weight:600}
+.cells{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:4px;width:min(420px,100%)}
+.cells i{display:block;height:10px;border-radius:2px;background:var(--line-2)}
+.cells i.on{background:var(--neon);box-shadow:0 0 8px var(--neon-glow)}
+.logs{display:grid;gap:22px;margin-top:30px}
+.log{background:var(--panel);border:1px solid var(--line-2);border-radius:16px;padding:clamp(20px,3.4vw,32px);display:grid;gap:22px}
+.log-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px 20px}
+.day{font:600 13px/1 var(--f-mono);letter-spacing:.14em;color:var(--neon)}
+.log h3{font:700 clamp(22px,2.6vw,28px)/1.15 var(--f-display);font-stretch:108%;margin:10px 0 0}
+.log .sub{color:var(--muted);margin:6px 0 0}
+.pass{display:inline-flex;align-items:center;gap:8px;font:600 13px/1 var(--f-mono);letter-spacing:.06em;color:var(--neon-ink);background:var(--neon);padding:9px 12px;border-radius:8px;white-space:nowrap}
+.log-body{display:grid;gap:26px}
+@media (min-width:980px){.log-body{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start}}
+.log-text{display:grid;gap:20px;min-width:0}
+.log-text h4{font:600 12.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.log-text p{margin:0}
+.rungs{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rungs li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:baseline}
+.rungs .rn{font:600 12.5px/1 var(--f-mono);color:var(--neon);border:1px solid rgba(57,255,20,.4);border-radius:5px;padding:5px 7px}
+.log-media{display:grid;gap:12px;min-width:0}
+.shot{display:block;width:100%;padding:0;border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--black);cursor:zoom-in;text-align:left;color:inherit;font:inherit}
+.shot:hover{border-color:var(--neon)}
+.shot img{display:block;width:100%;height:auto}
+.shot .cap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;padding:10px 12px;font:500 12.5px/1.4 var(--f-mono);color:var(--muted);border-top:1px solid var(--line-2)}
+.shot .cap b{color:var(--text);font-weight:500}
+.shot .cap em{font-style:normal}
+.thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.thumbs .shot img{aspect-ratio:16/9;object-fit:cover;object-position:left top}
+.tests{border-top:1px solid var(--line);padding-top:14px}
+.tests summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font:600 15px/1 var(--f-body);padding:8px 0}
+.tests summary::-webkit-details-marker{display:none}
+.tests summary svg{color:var(--neon);transition:transform .2s}
+.tests[open] summary svg{transform:rotate(180deg)}
+.tests summary:hover{color:var(--neon)}
+.ttable-wrap{overflow-x:auto;margin-top:12px}
+.ttable{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+.ttable th{font:600 12px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-2)}
+.ttable td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.ttable td:first-child{font:500 13px/1.6 var(--f-mono);color:var(--muted);width:36px;font-variant-numeric:tabular-nums}
+.ttable td.ok{font:600 13px/1.6 var(--f-mono);color:var(--neon);white-space:nowrap}
+.next-up{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:16px 18px;border:1px dashed var(--line-2);border-radius:12px;color:var(--muted);font-size:15px}
+.next-up b{color:var(--text);font-weight:600}
+.next-up .day{color:var(--muted)}
+dialog.lightbox{padding:0;border:1px solid var(--line-2);border-radius:12px;background:var(--black);max-width:min(1200px,94vw);color:var(--text)}
+dialog.lightbox::backdrop{background:rgba(0,0,0,.86)}
+dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;height:auto}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid var(--line-2);font:500 13px/1.4 var(--f-mono);color:var(--muted)}
+.lb-close{font:600 14px/1 var(--f-body);color:var(--neon-ink);background:var(--neon);border:0;border-radius:7px;padding:9px 12px;cursor:pointer}
+
 @media (max-width:560px){
   section{padding-block:64px}
   .job{padding:20px}
   .job .when{text-align:left}
   .kpi .val{font-size:28px}
 }
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.blink{animation:none}.menu summary svg,.more summary svg{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.blink{animation:none}.menu summary svg,.more summary svg,.tests summary svg{transition:none}}
 </style>
 </head>
 <body>
@@ -245,6 +296,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
         <li><a href="#experience">Experience</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#buildlog">Build Log</a></li>
         <li><a href="#education">Education</a></li>
         <li><a class="cta" href="#contact">Contact</a></li>
       </ul>
@@ -256,6 +308,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
           <a href="#experience">Experience</a>
           <a href="#skills">Skills</a>
           <a href="#projects">Projects</a>
+          <a href="#buildlog">Build Log</a>
           <a href="#education">Education</a>
           <a href="#contact">Contact</a>
         </div>
@@ -483,12 +536,95 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
           <p>A public series of real-world ladder logic builds. Day 1 is a conveyor motor start/stop circuit with a seal-in, a fail-safe stop, an E-stop and a latched overload fault, verified with 10 tests.</p>
 <pre class="ladder" aria-label="Motor rung of the Day 1 build">--+--] [ Start_PB --+--] [ Stop_PB--] [ EStop_OK--] [ OL_OK--]/[ OL_Fault--( Motor_Run )
   +--] [ Motor_Run -+</pre>
-          <a class="link" href="https://www.linkedin.com/in/praveenkumar-controlengineer" target="_blank" rel="noopener">Follow the series on LinkedIn
-            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="link" href="#buildlog">See the build log
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </article>
       </div>
     </div>
   </section>
+
+  <!-- ================= BUILD LOG ================= -->
+  <section id="buildlog">
+    <div class="wrap">
+      <span class="kicker">PLC build log</span>
+      <h2>One real machine at a time</h2>
+      <p class="intro">A 20-day series of real-world ladder logic builds. Each one is written in a PLC simulator and has to pass every test case before I mark it done. Newest first.</p>
+      <div class="log-progress"><span><b>1</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+
+      <div class="logs">
+        <article class="log" id="day-01">
+          <div class="log-top">
+            <div>
+              <span class="day">DAY 01 &middot; NOV 2026</span>
+              <h3>Conveyor motor start/stop</h3>
+              <p class="sub">Seal-in, fail-safe stop, E-stop and a latched overload fault</p>
+            </div>
+            <span class="pass">10/10 TESTS PASSED</span>
+          </div>
+
+          <div class="log-body">
+            <div class="log-text">
+              <div>
+                <h4>The problem</h4>
+                <p>An operator presses Start and the conveyor must keep running after the button is released. It must stop on Stop, E-stop or a motor overload, and it must never restart on its own.</p>
+              </div>
+              <div>
+                <h4>What I built &middot; 8 tags, 3 rungs</h4>
+                <ul class="rungs">
+                  <li><span class="rn">R0</span><span><b>Overload memory.</b> Latches the fault when the overload trips; clears only on Reset once the overload is healthy again.</span></li>
+                  <li><span class="rn">R1</span><span><b>Motor.</b> Start in parallel with a Motor_Run seal-in, in series with Stop, E-stop OK, overload OK and no fault.</span></li>
+                  <li><span class="rn">R2</span><span><b>Fault lamp.</b> Follows the latched fault.</span></li>
+                </ul>
+              </div>
+              <div>
+                <h4>What the results mean</h4>
+                <ul class="ticks">
+                  <li><span>Stop is wired <b>normally closed</b>, so a broken wire stops the machine instead of making it impossible to stop.</span></li>
+                  <li><span><b>No automatic restart</b> after an E-stop protects the person who just reached into the machine.</span></li>
+                  <li><span>The <b>latched fault</b> forces someone to find out why the motor tripped before running it again.</span></li>
+                </ul>
+              </div>
+              <ul class="chips" aria-label="Tools and techniques"><li class="chip">Ladder Logic</li><li class="chip">XIC / XIO / OTE</li><li class="chip">Seal-in</li><li class="chip">Fault latching</li><li class="chip">Rungs Studio</li></ul>
+            </div>
+
+            <div class="log-media">
+              <button class="shot" type="button" data-full="day01-running.jpg" data-cap="Motor running after Start is released: the seal-in path is live (Motor_Run = 1)">
+                <img src="day01-running.jpg" width="1600" height="861" loading="lazy" alt="Ladder logic with the Motor_Run seal-in path energized and Motor_Run equal to 1 in the I/O panel">
+                <span class="cap"><b>Motor running on seal-in</b><em>Motor_Run = 1</em></span>
+              </button>
+              <div class="thumbs">
+                <button class="shot" type="button" data-full="day01-fault.jpg" data-cap="Overload fault latched: Reset pressed while the overload is still tripped, so the fault comes back (Fault_Lamp = 1)">
+                  <img src="day01-fault.jpg" width="1600" height="884" loading="lazy" alt="Ladder logic with the overload fault latched and Fault_Lamp equal to 1">
+                  <span class="cap"><b>Fault latched</b></span>
+                </button>
+                <button class="shot" type="button" data-full="day01-tags.jpg" data-cap="Tag table: 5 inputs, 2 outputs and 1 internal fault bit, each with a description">
+                  <img src="day01-tags.jpg" width="1600" height="681" loading="lazy" alt="Tag table with Start, Stop, E-stop, overload, reset, motor, lamp and fault tags">
+                  <span class="cap"><b>Tag table</b></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <details class="tests">
+            <summary><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Show all 10 test cases</span></summary>
+            <div class="ttable-wrap">
+              <table class="ttable">
+                <thead><tr><th>#</th><th>Action</th><th>Expected</th><th>Result</th></tr></thead>
+                <tbody><tr><td>01</td><td>Simulation running, nothing pressed</td><td>Motor_Run 0, Fault_Lamp 0</td><td class="ok">PASS</td></tr><tr><td>02</td><td>Start_PB on, then off</td><td>Motor_Run 1 and stays 1 (seal-in)</td><td class="ok">PASS</td></tr><tr><td>03</td><td>Stop_PB off (Stop pressed)</td><td>Motor_Run 0</td><td class="ok">PASS</td></tr><tr><td>04</td><td>Stop_PB back on</td><td>Motor_Run stays 0</td><td class="ok">PASS</td></tr><tr><td>05</td><td>Start, then EStop_OK off</td><td>Motor_Run 0</td><td class="ok">PASS</td></tr><tr><td>06</td><td>EStop_OK back on</td><td>Motor_Run stays 0 (no automatic restart)</td><td class="ok">PASS</td></tr><tr><td>07</td><td>Start, then OL_OK off (overload trips)</td><td>Motor_Run 0, OL_Fault 1, Fault_Lamp 1</td><td class="ok">PASS</td></tr><tr><td>08</td><td>Start pressed while OL_OK is off</td><td>Motor_Run stays 0</td><td class="ok">PASS</td></tr><tr><td>09</td><td>Reset while OL_OK is still off</td><td>OL_Fault returns to 1</td><td class="ok">PASS</td></tr><tr><td>10</td><td>OL_OK on, Reset, then Start</td><td>OL_Fault 0, Fault_Lamp 0, Motor_Run 1</td><td class="ok">PASS</td></tr></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+
+        <div class="next-up"><span class="day">DAY 02</span><b>Forward/reverse motor with interlock</b><span>coming next</span></div>
+      </div>
+    </div>
+  </section>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Screenshot">
+    <img id="lb-img" src="" alt="">
+    <div class="lb-bar"><span id="lb-cap"></span><button class="lb-close" type="button" id="lb-close">Close</button></div>
+  </dialog>
 
   <!-- ================= EDUCATION ================= -->
   <section id="education">
@@ -561,6 +697,26 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
     var label=d.querySelector('summary span'), closed=label.textContent;
     d.addEventListener('toggle',function(){ label.textContent=d.open?'Show fewer highlights':closed; });
   });
+  // Build log: test-case dropdown label and screenshot viewer
+  document.querySelectorAll('details.tests').forEach(function(d){
+    var label=d.querySelector('summary span'), closed=label.textContent;
+    d.addEventListener('toggle',function(){ label.textContent=d.open?'Hide test cases':closed; });
+  });
+  var lb=document.getElementById('lightbox');
+  if(lb && typeof lb.showModal==='function'){
+    var lbImg=document.getElementById('lb-img'), lbCap=document.getElementById('lb-cap');
+    document.querySelectorAll('.shot').forEach(function(b){
+      b.addEventListener('click',function(){
+        var img=b.querySelector('img');
+        lbImg.src=b.getAttribute('data-full'); lbImg.alt=img?img.alt:''; lbCap.textContent=b.getAttribute('data-cap')||'';
+        lb.showModal();
+      });
+    });
+    document.getElementById('lb-close').addEventListener('click',function(){ lb.close(); });
+    lb.addEventListener('click',function(e){ if(e.target===lb) lb.close(); });
+  } else {
+    document.querySelectorAll('.shot').forEach(function(b){ b.addEventListener('click',function(){ window.open(b.getAttribute('data-full'),'_blank'); }); });
+  }
   // Copy email
   var btn=document.getElementById('copyEmail'), email=document.getElementById('email');
   if(btn && email){
