@@ -533,7 +533,7 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
         </article>
         <article class="proj">
           <div class="top"><h3>20 PLC builds in 20 days</h3><span class="now">ONGOING</span></div>
-          <p>A public series of real-world ladder logic builds. Day 1 is a conveyor motor start/stop circuit with a seal-in, a fail-safe stop, an E-stop and a latched overload fault, verified with 10 tests.</p>
+          <p>A public series of real-world ladder logic builds, each verified with 10 tests. So far: a conveyor start/stop with an E-stop and a latched overload fault, and a forward/reverse motor with interlocks and a 2-second coast-down timer.</p>
 <pre class="ladder" aria-label="Motor rung of the Day 1 build">--+--] [ Start_PB --+--] [ Stop_PB--] [ EStop_OK--] [ OL_OK--]/[ OL_Fault--( Motor_Run )
   +--] [ Motor_Run -+</pre>
           <a class="link" href="#buildlog">See the build log
@@ -549,9 +549,75 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
       <span class="kicker">PLC build log</span>
       <h2>One real machine at a time</h2>
       <p class="intro">A 20-day series of real-world ladder logic builds. Each one is written in a PLC simulator and has to pass every test case before I mark it done. Newest first.</p>
-      <div class="log-progress"><span><b>1</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="log-progress"><span><b>2</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
 
       <div class="logs">
+        <div class="next-up"><span class="day">DAY 03</span><b>Two-hand anti-tie-down control</b><span>coming next</span></div>
+
+        <article class="log" id="day-02">
+          <div class="log-top">
+            <div>
+              <span class="day">DAY 02 &middot; NOV 2026</span>
+              <h3>Forward/reverse motor with interlock</h3>
+              <p class="sub">Direction interlocks and a 2-second coast-down timer before any change of direction</p>
+            </div>
+            <span class="pass">10/10 TESTS PASSED</span>
+          </div>
+
+          <div class="log-body">
+            <div class="log-text">
+              <div>
+                <h4>The problem</h4>
+                <p>One motor, two contactors: K1 runs it forward, K2 reverses it by swapping two phases. Both must never be energized together, and the motor must coast to a stop before it can change direction. Reversing a spinning motor causes a current surge and a shock load on the coupling and gearbox.</p>
+              </div>
+              <div>
+                <h4>What I built &middot; 6 tags, 1 timer, 3 rungs</h4>
+                <ul class="rungs">
+                  <li><span class="rn">R0</span><span><b>Coast-down timer.</b> A TON runs for 2 s once both motors are off. Its done bit means &ldquo;stopped long enough to change direction&rdquo;.</span></li>
+                  <li><span class="rn">R1</span><span><b>Forward.</b> Fwd pressed, Rev not pressed and the timer done, in parallel with a Motor_Fwd seal-in, in series with Stop and an XIO Motor_Rev interlock.</span></li>
+                  <li><span class="rn">R2</span><span><b>Reverse.</b> The mirror image of R1, with every Fwd and Rev swapped.</span></li>
+                </ul>
+              </div>
+              <div>
+                <h4>What the results mean</h4>
+                <ul class="ticks">
+                  <li><span>Pressing Rev while running forward <b>does nothing</b>. The interlock means both contactors can never be on at once, the same rule a panel wires in with auxiliary contacts.</span></li>
+                  <li><span>Reverse <b>waits for the 2-second coast-down</b>, then starts. No plugging, so no current surge and no shock load on the drivetrain.</span></li>
+                  <li><span>Pressing both buttons together starts neither direction, and Stop always wins with <b>no automatic restart</b>.</span></li>
+                </ul>
+              </div>
+              <ul class="chips" aria-label="Tools and techniques"><li class="chip">Ladder Logic</li><li class="chip">TON timer</li><li class="chip">Interlocks</li><li class="chip">Seal-in</li><li class="chip">Rungs Studio</li></ul>
+            </div>
+
+            <div class="log-media">
+              <button class="shot" type="button" data-full="day02-forward.jpg" data-cap="Running forward after Fwd is released: the seal-in path is live and the reverse rung is blocked (Motor_Fwd = 1, Motor_Rev = 0)">
+                <img src="day02-forward.jpg" width="1600" height="973" loading="lazy" alt="Ladder logic with the forward rung energized through its seal-in, Motor_Fwd equal to 1 and Motor_Rev equal to 0 in the I/O panel">
+                <span class="cap"><b>Running forward on seal-in</b><em>Motor_Fwd = 1</em></span>
+              </button>
+              <div class="thumbs">
+                <button class="shot" type="button" data-full="day02-trend.jpg" data-cap="Trend over one minute: Fwd starts the motor, a Rev press while running forward is ignored, Stop drops it, and reverse runs only from a stop">
+                  <img src="day02-trend.jpg" width="1600" height="979" loading="lazy" alt="Trend chart of Fwd_PB, Rev_PB, Stop_PB, Motor_Fwd and Motor_Rev showing a Rev press ignored while the motor runs forward">
+                  <span class="cap"><b>Interlock on the trend</b></span>
+                </button>
+                <button class="shot" type="button" data-full="day02-tags.jpg" data-cap="Tag table: 3 push-button inputs, 2 contactor outputs and a TIMER for the coast-down">
+                  <img src="day02-tags.jpg" width="1600" height="683" loading="lazy" alt="Tag table with Fwd_PB, Rev_PB, Stop_PB, Motor_Fwd, Motor_Rev and the Coast_Timer TIMER tag">
+                  <span class="cap"><b>Tag table</b></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <details class="tests">
+            <summary><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Show all 10 test cases</span></summary>
+            <div class="ttable-wrap">
+              <table class="ttable">
+                <thead><tr><th>#</th><th>Action</th><th>Expected</th><th>Result</th></tr></thead>
+                <tbody><tr><td>01</td><td>Simulation started, wait 3 s</td><td>Both motors 0, timer done (2000 ms)</td><td class="ok">PASS</td></tr><tr><td>02</td><td>Fwd_PB on, then off</td><td>Motor_Fwd 1 and stays 1 (seal-in)</td><td class="ok">PASS</td></tr><tr><td>03</td><td>Rev_PB pressed while running forward</td><td>No change, Motor_Rev stays 0 (interlock)</td><td class="ok">PASS</td></tr><tr><td>04</td><td>Stop_PB off, then on</td><td>Motor_Fwd 0, timer counts up to 2000 ms</td><td class="ok">PASS</td></tr><tr><td>05</td><td>Stop, then Rev_PB held straight away</td><td>Motor_Rev waits for the timer, then starts</td><td class="ok">PASS</td></tr><tr><td>06</td><td>Rev_PB released</td><td>Motor_Rev stays 1 (seal-in)</td><td class="ok">PASS</td></tr><tr><td>07</td><td>Fwd_PB pressed while running in reverse</td><td>No change, Motor_Fwd stays 0 (interlock)</td><td class="ok">PASS</td></tr><tr><td>08</td><td>Stop_PB off, then on, wait 3 s</td><td>Both motors 0, timer done</td><td class="ok">PASS</td></tr><tr><td>09</td><td>Fwd_PB and Rev_PB held together</td><td>Neither direction starts</td><td class="ok">PASS</td></tr><tr><td>10</td><td>Stop held, Fwd_PB pressed, Stop released</td><td>Motor_Fwd stays 0 (no restart)</td><td class="ok">PASS</td></tr></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+
         <article class="log" id="day-01">
           <div class="log-top">
             <div>
@@ -615,8 +681,6 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
             </div>
           </details>
         </article>
-
-        <div class="next-up"><span class="day">DAY 02</span><b>Forward/reverse motor with interlock</b><span>coming next</span></div>
       </div>
     </div>
   </section>
