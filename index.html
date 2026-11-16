@@ -533,7 +533,7 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
         </article>
         <article class="proj">
           <div class="top"><h3>20 PLC builds in 20 days</h3><span class="now">ONGOING</span></div>
-          <p>A public series of real-world ladder logic builds, each verified with 10 tests. So far: a conveyor start/stop with an E-stop and a latched overload fault, and a forward/reverse motor with interlocks and a 2-second coast-down timer.</p>
+          <p>A public series of real-world ladder logic builds, each verified with 10 tests. So far: a conveyor start/stop with an E-stop and a latched overload fault, a forward/reverse motor with interlocks and a coast-down timer, and a two-hand press control that defeats tie-down.</p>
 <pre class="ladder" aria-label="Motor rung of the Day 1 build">--+--] [ Start_PB --+--] [ Stop_PB--] [ EStop_OK--] [ OL_OK--]/[ OL_Fault--( Motor_Run )
   +--] [ Motor_Run -+</pre>
           <a class="link" href="#buildlog">See the build log
@@ -549,10 +549,74 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
       <span class="kicker">PLC build log</span>
       <h2>One real machine at a time</h2>
       <p class="intro">A 20-day series of real-world ladder logic builds. Each one is written in a PLC simulator and has to pass every test case before I mark it done. Newest first.</p>
-      <div class="log-progress"><span><b>2</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="log-progress"><span><b>3</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
 
       <div class="logs">
-        <div class="next-up"><span class="day">DAY 03</span><b>Two-hand anti-tie-down control</b><span>coming next</span></div>
+        <div class="next-up"><span class="day">DAY 04</span><b>Falling edge and double-click button</b><span>coming next</span></div>
+
+        <article class="log" id="day-03">
+          <div class="log-top">
+            <div>
+              <span class="day">DAY 03 &middot; NOV 2026</span>
+              <h3>Two-hand anti-tie-down control</h3>
+              <p class="sub">A punch press that cycles only when both hands press within 0.5 s, and never with a taped-down button</p>
+            </div>
+            <span class="pass">10/10 TESTS PASSED</span>
+          </div>
+
+          <div class="log-body">
+            <div class="log-text">
+              <div>
+                <h4>The problem</h4>
+                <p>Two-hand controls keep an operator&rsquo;s hands out of the die: the press runs only while both buttons are held. Operators defeat them by taping one button down and working one-handed. The logic must refuse a late second hand, stop the instant either hand lifts, and re-arm only after both hands come off.</p>
+              </div>
+              <div>
+                <h4>What I built &middot; 5 tags, 1 timer, 3 rungs</h4>
+                <ul class="rungs">
+                  <li><span class="rn">R0</span><span><b>Sync window.</b> Left OR Right starts a 500 ms TON. Its done bit means &ldquo;the second hand came too late&rdquo;.</span></li>
+                  <li><span class="rn">R1</span><span><b>Cycle lock.</b> Set when a cycle runs, held while any hand is down (the timer&rsquo;s EN bit), cleared only when both hands are off.</span></li>
+                  <li><span class="rn">R2</span><span><b>Press cycle.</b> Window open and not locked, or already running, in series with Left AND Right.</span></li>
+                </ul>
+              </div>
+              <div>
+                <h4>What the results mean</h4>
+                <ul class="ticks">
+                  <li><span>Holding one button down, then pressing the other, <b>never starts the press</b>. The tie-down trick fails.</span></li>
+                  <li><span>Lifting either hand stops the stroke <b>on the next scan</b>, and a new cycle needs <b>both hands off first</b>. No repeat strokes.</span></li>
+                  <li><span>Break-it test: with a 60-second window, a button held for 4.7 s still got through. The <b>0.5 s limit</b>, the same one ISO 13851 sets, is what does the work.</span></li>
+                </ul>
+              </div>
+              <ul class="chips" aria-label="Tools and techniques"><li class="chip">Ladder Logic</li><li class="chip">TON timer</li><li class="chip">Anti-repeat</li><li class="chip">Machine safety</li><li class="chip">Rungs Studio</li></ul>
+            </div>
+
+            <div class="log-media">
+              <button class="shot" type="button" data-full="day03-taped.jpg" data-cap="Tie-down attempt blocked: Left_PB held, Right_PB pressed late. Both buttons on, Sync_Timer.DN = 1 and Press_Cycle = 0">
+                <img src="day03-taped.jpg" width="1600" height="907" loading="lazy" alt="Ladder logic with both push buttons on, the sync timer done and Press_Cycle equal to 0 in the I/O panel">
+                <span class="cap"><b>Taped button blocked</b><em>Press_Cycle = 0</em></span>
+              </button>
+              <div class="thumbs">
+                <button class="shot" type="button" data-full="day03-breakit.jpg" data-cap="Break-it test: with the preset raised to 60000 ms, a button held for 4.7 s still lets the press cycle (Press_Cycle = 1)">
+                  <img src="day03-breakit.jpg" width="1600" height="906" loading="lazy" alt="Ladder logic with the TON preset set to 60000 and Press_Cycle equal to 1 after 4.7 seconds">
+                  <span class="cap"><b>Break-it: 60 s window</b></span>
+                </button>
+                <button class="shot" type="button" data-full="day03-tags.jpg" data-cap="Tag table: two push-button inputs, the Press_Cycle output, the Cycle_Lock bit and the Sync_Timer TIMER">
+                  <img src="day03-tags.jpg" width="1600" height="720" loading="lazy" alt="Tag table with Left_PB, Right_PB, Press_Cycle, Cycle_Lock and the Sync_Timer TIMER tag">
+                  <span class="cap"><b>Tag table</b></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <details class="tests">
+            <summary><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Show all 10 test cases</span></summary>
+            <div class="ttable-wrap">
+              <table class="ttable">
+                <thead><tr><th>#</th><th>Action</th><th>Expected</th><th>Result</th></tr></thead>
+                <tbody><tr><td>01</td><td>Simulation started, both buttons off</td><td>Press_Cycle 0, Cycle_Lock 0, timer 0</td><td class="ok">PASS</td></tr><tr><td>02</td><td>Left_PB, then Right_PB within 0.5 s</td><td>Press_Cycle 1</td><td class="ok">PASS</td></tr><tr><td>03</td><td>Both held for 3 s</td><td>Press_Cycle stays 1 (seal-in)</td><td class="ok">PASS</td></tr><tr><td>04</td><td>Right_PB released</td><td>Press_Cycle 0 immediately</td><td class="ok">PASS</td></tr><tr><td>05</td><td>Right_PB pressed again, Left_PB still held</td><td>Press_Cycle stays 0 (cycle lock)</td><td class="ok">PASS</td></tr><tr><td>06</td><td>Both released</td><td>Lock and timer reset, ready to cycle</td><td class="ok">PASS</td></tr><tr><td>07</td><td>Left_PB held (taped), Right_PB after 2 s</td><td>Press_Cycle stays 0 (window closed)</td><td class="ok">PASS</td></tr><tr><td>08</td><td>Right_PB pressed repeatedly, Left_PB held</td><td>Press_Cycle never turns on</td><td class="ok">PASS</td></tr><tr><td>09</td><td>Right_PB first, Left_PB straight after</td><td>Press_Cycle 1 (either hand first)</td><td class="ok">PASS</td></tr><tr><td>10</td><td>Left_PB released and re-pressed quickly</td><td>Press_Cycle stays 0 until both are off</td><td class="ok">PASS</td></tr></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
 
         <article class="log" id="day-02">
           <div class="log-top">
