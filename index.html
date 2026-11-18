@@ -533,7 +533,7 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
         </article>
         <article class="proj">
           <div class="top"><h3>20 PLC builds in 20 days</h3><span class="now">ONGOING</span></div>
-          <p>A public series of real-world ladder logic builds, each verified with 10 tests. So far: a conveyor start/stop with an E-stop and a latched overload fault, a forward/reverse motor with interlocks and a coast-down timer, and a two-hand press control that defeats tie-down.</p>
+          <p>A public series of real-world ladder logic builds, each verified with 10 tests. So far: a conveyor start/stop with an E-stop and a latched overload fault, a forward/reverse motor with interlocks and a coast-down timer, a two-hand press control that defeats tie-down, and a one-button control with a one-scan release pulse and a double-click toggle.</p>
 <pre class="ladder" aria-label="Motor rung of the Day 1 build">--+--] [ Start_PB --+--] [ Stop_PB--] [ EStop_OK--] [ OL_OK--]/[ OL_Fault--( Motor_Run )
   +--] [ Motor_Run -+</pre>
           <a class="link" href="#buildlog">See the build log
@@ -549,10 +549,78 @@ dialog.lightbox img{display:block;max-width:100%;max-height:82vh;width:auto;heig
       <span class="kicker">PLC build log</span>
       <h2>One real machine at a time</h2>
       <p class="intro">A 20-day series of real-world ladder logic builds. Each one is written in a PLC simulator and has to pass every test case before I mark it done. Newest first.</p>
-      <div class="log-progress"><span><b>3</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <div class="log-progress"><span><b>4</b> / 20 builds complete</span><span class="cells" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
 
       <div class="logs">
-        <div class="next-up"><span class="day">DAY 04</span><b>Falling edge and double-click button</b><span>coming next</span></div>
+        <div class="next-up"><span class="day">DAY 05</span><b>Garage door with photo-eye reverse</b><span>coming next</span></div>
+
+        <article class="log" id="day-04">
+          <div class="log-top">
+            <div>
+              <span class="day">DAY 04 &middot; NOV 2026</span>
+              <h3>Falling-edge pulse and double-click button</h3>
+              <p class="sub">One push button, three jobs: a release pulse exactly one scan long and a half-second double-click toggle, built from XIC, XIO and OTE only</p>
+            </div>
+            <span class="pass">10/10 TESTS PASSED</span>
+          </div>
+
+          <div class="log-body">
+            <div class="log-text">
+              <div>
+                <h4>The problem</h4>
+                <p>Panel space and PLC inputs run out, so one button often has to do more than one job. A release signal must fire once, not on every scan the button stays up, or a counter or sequencer steps many times. A double-click must be told apart from a single press and from two slow presses, or an operator switches modes by accident.</p>
+              </div>
+              <div>
+                <h4>What I built &middot; 8 tags, 1 timer, 7 rungs</h4>
+                <ul class="rungs">
+                  <li><span class="rn">R0</span><span><b>Rising edge.</b> Button on now AND off last scan gives Press_Pulse for one scan.</span></li>
+                  <li><span class="rn">R1</span><span><b>Falling edge.</b> Button off now AND on last scan gives Release_Pulse for one scan.</span></li>
+                  <li><span class="rn">R2</span><span><b>Memory bit.</b> Button copied into Btn_Prev, placed last on purpose so the rungs above still see the previous scan.</span></li>
+                  <li><span class="rn">R3</span><span><b>Second press.</b> A new press while armed and inside the window gives Double_Pulse.</span></li>
+                  <li><span class="rn">R4</span><span><b>Armed.</b> Set by the first press, sealed in, cleared when the window ends or a double-click lands.</span></li>
+                  <li><span class="rn">R5</span><span><b>Window.</b> A 500 ms TON runs while Armed.</span></li>
+                  <li><span class="rn">R6</span><span><b>Toggle.</b> Double_Pulse flips Double_Lamp; otherwise it holds its state.</span></li>
+                </ul>
+              </div>
+              <div>
+                <h4>What the results mean</h4>
+                <ul class="ticks">
+                  <li><span>Every release gives <b>one Release_Pulse, one scan (0.1 s) wide</b>, however long the button was held: the green spikes on the trend.</span></li>
+                  <li><span>Two presses within 0.5 s toggle the lamp; <b>a single press or two presses 1 s apart do nothing</b>. Boundary checked one scan at a time: a second press at 0.5 s counts, at 0.6 s it does not.</span></li>
+                  <li><span>Break-it test: moving the falling-edge rung <b>below the memory rung</b> killed Release_Pulse completely. Same instructions, one rung moved: scan order is part of the logic.</span></li>
+                </ul>
+              </div>
+              <ul class="chips" aria-label="Tools and techniques"><li class="chip">Ladder Logic</li><li class="chip">Edge detection</li><li class="chip">TON timer</li><li class="chip">Scan order</li><li class="chip">Rungs Studio</li></ul>
+            </div>
+
+            <div class="log-media">
+              <button class="shot" type="button" data-full="day04-trend.jpg" data-cap="Trend: every time Button goes from 1 to 0, Release_Pulse spikes for exactly one scan. Double_Lamp stays 0 because these presses were more than 0.5 s apart">
+                <img src="day04-trend.jpg" width="1600" height="974" loading="lazy" alt="Trend chart of Button, Release_Pulse and Double_Lamp, with one narrow Release_Pulse spike at each button release">
+                <span class="cap"><b>One-scan release pulses</b><em>1 spike per release</em></span>
+              </button>
+              <div class="thumbs">
+                <button class="shot" type="button" data-full="day04-window.jpg" data-cap="Stepping one scan at a time: the first press has armed the logic and Window_Timer.ACC is at 400 of 500 ms, so a second press now still counts as a double-click">
+                  <img src="day04-window.jpg" width="1600" height="976" loading="lazy" alt="Paused ladder logic with Armed equal to 1 and the window timer accumulator at 400 of 500">
+                  <span class="cap"><b>Window open: 400 / 500 ms</b></span>
+                </button>
+                <button class="shot" type="button" data-full="day04-tags.jpg" data-cap="Tag table: the Button input, the Release_Pulse and Double_Lamp outputs, four memory bits and the Window_Timer TIMER">
+                  <img src="day04-tags.jpg" width="1600" height="640" loading="lazy" alt="Tag table with Button, Release_Pulse, Double_Lamp, Btn_Prev, Press_Pulse, Double_Pulse, Armed and the Window_Timer TIMER tag">
+                  <span class="cap"><b>Tag table</b></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <details class="tests">
+            <summary><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 5l4.5 4.5L11.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Show all 10 test cases</span></summary>
+            <div class="ttable-wrap">
+              <table class="ttable">
+                <thead><tr><th>#</th><th>Action</th><th>Expected</th><th>Result</th></tr></thead>
+                <tbody><tr><td>01</td><td>Simulator paused after one scan, button off</td><td>Every value 0</td><td class="ok">PASS</td></tr><tr><td>02</td><td>Button pressed, one scan</td><td>Press_Pulse 1, Armed 1</td><td class="ok">PASS</td></tr><tr><td>03</td><td>Button held one more scan</td><td>Press_Pulse back to 0, window timer at 100 ms</td><td class="ok">PASS</td></tr><tr><td>04</td><td>Button released</td><td>Release_Pulse 1</td><td class="ok">PASS</td></tr><tr><td>05</td><td>One more scan</td><td>Release_Pulse back to 0 (exactly one scan)</td><td class="ok">PASS</td></tr><tr><td>06</td><td>Second press 0.4 s after the first</td><td>Double_Pulse 1, Double_Lamp 1</td><td class="ok">PASS</td></tr><tr><td>07</td><td>Another double-click</td><td>Double_Lamp back to 0</td><td class="ok">PASS</td></tr><tr><td>08</td><td>Single press, then wait</td><td>Armed drops after 0.6 s, lamp unchanged</td><td class="ok">PASS</td></tr><tr><td>09</td><td>Two presses 1 s apart</td><td>Lamp unchanged, a new window opens</td><td class="ok">PASS</td></tr><tr><td>10</td><td>Fast double-click in real time</td><td>Double_Lamp toggles</td><td class="ok">PASS</td></tr></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
 
         <article class="log" id="day-03">
           <div class="log-top">
